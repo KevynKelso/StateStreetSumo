@@ -4,7 +4,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]= "-1"    # Disable GPU
 #sys.path.append('baselines')
 sys.path.append('traci_env')
 import traci_env
-import tensorflow as tf
+# import tensorflow as tf
 #from baselines.common.models import register
 
 OBS_SPACE = (20, 5, 1)

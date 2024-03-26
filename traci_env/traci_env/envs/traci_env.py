@@ -68,6 +68,14 @@ class TraciEnv(gym.Env):
         self.action_space = ACT_SPACE
         self.steps = 0
 
+    def set_attrs(self, state_mode, trial_id, eps_id, demand_file, rush_hour, dead_hour):
+        self.state_mode = state_mode
+        self.trial_id = trial_id
+        self.eps_id = eps_id
+        self.demand_file = demand_file
+        self.rush_hour = rush_hour
+        self.dead_hour = dead_hour
+
     def open(self):
         self.env_id = str(self.trial_id) + '-' + str(self.eps_id)
         copy_tree(path+'Data', 'Data'+self.env_id)

@@ -1,3 +1,5 @@
+import tensorflow as tf
+print(tf.config.list_physical_devices('GPU'))
 import shared
 import numpy as np
 import optparse
@@ -18,7 +20,6 @@ def main():
     optParser.add_option("--eps", action="store", default='40', type='int', help="number of episodes per trial")
     optParser.add_option("--procs", action="store", default='30', type='int', help="number of processors to use")
     options, args = optParser.parse_args()
-    print(options)
 
     if options.agent == 'actu':
         num_eps = 1
@@ -67,11 +68,14 @@ def run_trial(agent_type, file, num_eps, trial, render=False):
         env.demand_file = shared.demands[file]
         env.rush_hour = shared.rush[file]
         env.dead_hour = shared.dead[file]
+        env.set_attrs(mode, trial, ep_cnt, shared.demands[file], shared.rush[file], shared.dead[file])
+        env.reset()
         if render: env.render()
 
         state, rew, reset = env.reset(), 0, False
         while not reset:
             state, rew, reset, _ = env.step(action=agent.act(state, rew, reset))
+            print(rew)
         agent.episode_end(env.env_id)
         env.close()
 

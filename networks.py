@@ -1,13 +1,14 @@
 import keras
 from keras.models import Model
 from keras.layers import Input, Dense, LeakyReLU, Flatten
-from keras.layers.convolutional import Conv2D
+from keras.layers import Conv2D
 from keras import regularizers
 from keras.optimizers import Adam
 from keras import backend as K
 import tensorflow as tf
 import numpy as np
 from scipy.special import softmax
+print(tf.config.list_physical_devices('GPU'))
 
 
 CLIPRANGE = 0.2
@@ -32,7 +33,7 @@ def ppo_loss(advantage, old_prob):
     return loss
 
 
-keras.losses.huber_loss = tf.losses.huber_loss
+# keras.losses.huber_loss = tf.kerras.losses.huber_loss
 keras.losses.ppo_loss = ppo_loss
 
 
@@ -74,7 +75,7 @@ class DQNNet(object):
         self.num_actions = num_actions
         self.learning_rate = learning_rate
         self.model = keras.Sequential()
-        self.model.add(Conv2D(64, input_shape=self.input_shape, kernel_size=2))
+        self.model.add(Conv2D(64, input_shape=self.input_shape, kernel_size=(2,2), name="conv2d_0"))
         self.model.add(LeakyReLU())
         self.model.add(Flatten())
         self.model.add(Dense(64))
@@ -92,7 +93,7 @@ class DQNNet(object):
 
     # Returns the best action given a single state
     def best_action(self, state):
-        predicted = self.model.predict(np.asarray([state]))[0]
+        predicted = self.model.predict(np.asarray([state]), verbose=0)[0]
         action = np.argmax(predicted)
         return action
 
@@ -122,7 +123,7 @@ class DQNNet(object):
         labels = self.model.predict_on_batch(states)
         for i in range(len(states)):
             labels[i][actions[i]] = utilities[i]
-        self.model.train_on_batch(states, labels)
+        return self.model.train_on_batch(states, labels, return_dict=True)
 
 
 class ActorPoly(object):
